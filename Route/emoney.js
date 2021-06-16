@@ -26,3 +26,5 @@ router.get('/step1', async (req, res) => {
         })
     }
 })
+
+module.exports = router
