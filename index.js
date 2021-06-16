@@ -6,7 +6,8 @@ const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
 
 const cc = require('./Route/creditcard')
-const emoney = require('./Route/emoney')
+const emoney = require('./Route/emoney');
+const core = require('./Config/config');
 const port = 8080;
 
 const { REACT_APP_MIDTRANS_SERVER_KEY, REACT_APP_MIDTRANS_CLIENT_KEY } = process.env
@@ -18,6 +19,29 @@ app.use(bodyParser.json());
 
 app.use('/cc', cc)
 app.use('/emoney', emoney)
+
+app.get('/get_token', async (req, res) => {
+    var cardData = {
+        "card_number": '4811111111111114',
+        "card_exp_month": '02',
+        "card_exp_year": '2025',
+        "card_cvv": '123',
+        "client_key": REACT_APP_MIDTRANS_CLIENT_KEY,
+    };
+
+    try {
+        const x = await core.cardToken(cardData)
+        res.send({
+            data:x
+        })
+    } catch (error) {
+        console.log(error)
+        res({
+            msg:'Error gan',
+            code:200
+        })
+    }
+})
 
 app.post('/charge_cc/:token_id', async (req, res) => {
     const { token_id } = req.params
